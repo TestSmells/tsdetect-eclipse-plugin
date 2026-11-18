@@ -11,7 +11,9 @@ import main.java.testsmell.Util;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DependentTest extends AbstractSmell {
 
@@ -49,20 +51,26 @@ public class DependentTest extends AbstractSmell {
         classVisitor = new DependentTest.ClassVisitor();
         classVisitor.visit(testFileCompilationUnit, null);
 
+        // Every test method name declared in this file.
+        Set<String> testMethodNames = new HashSet<>();
         for (TestMethod testMethod : testMethods) {
-            if (testMethod.getCalledMethods().stream().anyMatch(x -> x.getName().equals(testMethods.stream().map(z -> z.getMethodDeclaration().getNameAsString())))){
-                smellyElementList.add(new main.java.testsmell.TestMethod(testMethod.getMethodDeclaration().getNameAsString()));
-            }
+            testMethodNames.add(testMethod.getMethodDeclaration().getNameAsString());
         }
 
-/*
-        for (int i = 0; i < testMethods.get(i).getCalledMethods().size(); i++) {
-            for (TestMethod testMethod : testMethods) {
-                if (testMethods.get(i).getCalledMethods().stream().anyMatch(x -> x.getName().equals(testMethod.getMethodDeclaration().getNameAsString()))) {
-                    smellyElementList.add(new testsmell.TestMethod(testMethod.getMethodDeclaration().getNameAsString()));
-                }
-            }
-        }*/
+        // A test is dependent when it calls one of the OTHER test methods in the
+        // same class. A call to itself is recursion, not a dependency.
+        for (TestMethod testMethod : testMethods) {
+            String ownName = testMethod.getMethodDeclaration().getNameAsString();
+
+            boolean callsAnotherTest = testMethod.getCalledMethods().stream()
+                    .anyMatch(called -> !called.getName().equals(ownName)
+                                     && testMethodNames.contains(called.getName()));
+
+            main.java.testsmell.TestMethod element =
+                    new main.java.testsmell.TestMethod(ownName);
+            element.setHasSmell(callsAnotherTest);
+            smellyElementList.add(element);
+        }
     }
 
     /**

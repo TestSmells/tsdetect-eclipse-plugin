@@ -144,10 +144,11 @@ must be saved before running.
 paths on backslashes only and assume a minimum path depth. Behaviour on macOS
 and Linux is untested and likely degraded.
 
-**Two engine analyzers are impaired.** `Dependent Test` cannot report under any
-input, and `Resource Optimism` only detects the inline `new File(...)` form, not
-the assigned-variable case. Both are defects in engine code, which project
-constraints prohibit modifying. Root causes are documented in
+**One engine analyzer is impaired.** `Resource Optimism` only detects the inline
+`new File(...)` form, not the assigned-variable case. This is a defect in engine
+code, which project constraints prohibit modifying. `Dependent Test` had the same
+status until it was corrected under an approved exception — see
+`documentation/srs-exceptions.md`. Root causes are documented in
 `documentation/regression-baseline.md`.
 
 ### Developer setup

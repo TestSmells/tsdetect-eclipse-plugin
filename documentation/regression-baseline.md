@@ -67,16 +67,18 @@ reflect engine versions rather than plugin defects.
 | 18 | Resource Optimism | detected | detected | yes |
 | 19 | Magic Number Test | detected | detected | yes |
 | 20 | Verbose Test | detected | detected | yes |
-| 21 | Dependent Test | not reported | not reported | yes (see below) |
+| 21 | Dependent Test | detected | detected | yes |
 
-**Coverage: 20 of 21 detectors exercised. Plugin and baseline agree on all 21.**
+**Coverage: 21 of 21 detectors exercised. Plugin and baseline agree on all 21.**
 
 Smells 1–19 are triggered by `testCalculator.java`; Verbose Test is isolated in
 `testVerbose.java` because its threshold requires a deliberately oversized
 method that would otherwise dominate the readable fixture.
 
-Dependent Test is absent from both. This is not a corpus gap — the analyzer
-cannot fire under any input (see Finding 3).
+Dependent Test is triggered by `testAccount.java`, where
+`testBalanceAfterDeposit()` calls `testDeposit()`. The detector could not fire
+at all until the defect in Finding 3 was corrected under an approved SRS
+exception; see `documentation/srs-exceptions.md`.
 
 ## Discrepancy found and resolved: Constructor Initialization
 
@@ -141,19 +143,29 @@ without an `exists()` check — is never flagged. Only the inline form, which
 correctly uses `.asString().equals("File")`, fires. The corpus triggers the
 inline form deliberately.
 
-### Finding 3 — Dependent Test cannot fire
+### Finding 3 — Dependent Test could not fire — **corrected**
 
-`DependentTest` compares a `String` to a `Stream`:
+`DependentTest` compared a `String` to a `Stream`:
 
 ```java
 x.getName().equals(testMethods.stream().map(z -> z.getMethodDeclaration().getNameAsString()))
 ```
 
-This is always false. A corrected version exists in the same file, commented
-out. Independently, the `TestMethod` element the analyzer would create never has
-`setHasSmell(true)` called on it, so even a matching condition would report
-nothing. The detector is inoperative under all inputs, which is why 20 of 21 is
-the maximum attainable corpus coverage.
+This is always false, so the analyzer's element list was never populated. A
+corrected version existed in the same file, commented out. Independently, the
+`TestMethod` element the analyzer would create never had `setHasSmell(true)`
+called on it, so even a matching condition would have reported nothing. Either
+defect alone made the detector inoperative under all inputs.
+
+Both were corrected under an approved exception to the SRS engine constraint,
+granted by the client on 16 November 2026. The membership test now uses
+`contains()` against the set of test method names, `setHasSmell` is called, and
+a method calling itself is excluded as recursion rather than dependency.
+
+Verified on `fixtures/testAccount.java`: the unmodified engine reported
+`Dependent Test = false`, the corrected engine reports `true`, on identical
+input. The shared cross-IDE corpus is unaffected — no case in it contains a test
+that calls another test. Full record in `documentation/srs-exceptions.md`.
 
 ### Finding 4 — Debug output on stdout
 

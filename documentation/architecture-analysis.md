@@ -269,9 +269,11 @@ assigned-variable case from firing; a `String`-to-`Stream` comparison in
 `DependentTest` that makes the detector unreachable under any input; and a stray
 `System.out.println` in `ResourceOptimism`.
 
-**Out of scope.** Recorded in `documentation/regression-baseline.md` rather than
-fixed. `DependentTest` being unreachable is why corpus coverage is capped at 20 of
-21 detectors.
+**Out of scope**, with one exception. Three of the four are recorded in
+`documentation/regression-baseline.md` rather than fixed. The `DependentTest`
+defect was corrected under an exception to the engine constraint granted by the
+client on 16 November 2026, raising corpus coverage from 20 to 21 of 21
+detectors; see `documentation/srs-exceptions.md`.
 
 ---
 
