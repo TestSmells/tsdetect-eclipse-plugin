@@ -36,7 +36,7 @@ From the update site:
 1. In Eclipse, go to **Help → Install New Software…**
 2. Click **Add…**
 3. Enter a name (for example `tsDetect`) and this location:
-   `https://testsmells.github.io/TestSmellDetectorPlugin2026/`
+   `https://testsmells.github.io/tsdetect-eclipse-plugin/`
    then click **Add**
 4. Uncheck **Group items by category**
 5. Select **Test Smell Detector**, click **Next**, accept the license, click **Finish**
@@ -52,7 +52,8 @@ install from a local copy instead.
 
 **From a local directory or archive:**
 
-1. Obtain the update site: either clone this repository (it is published from
+1. Obtain the update site: either clone this repository
+   (`https://github.com/TestSmells/tsdetect-eclipse-plugin`, published from
    `docs/`) or export one yourself (see Building the update site).
 2. In Eclipse, go to **Help → Install New Software… → Add…**
 3. Click **Local…** and choose the directory, or **Archive…** and choose the
