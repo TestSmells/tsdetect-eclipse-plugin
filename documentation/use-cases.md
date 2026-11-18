@@ -312,10 +312,9 @@ is skipped and named in a dialog; the rest of the project is still analyzed.
 Pairing happens in the plugin rather than the engine, so the recognised set can be
 extended without touching engine code.
 
-**Dependent Test is never reported.** The detector compares a `String` to a
-`Stream`, which is always false, and never sets its smell flag. It cannot fire
-under any input. This is an engine defect, documented in
-`documentation/regression-baseline.md` rather than fixed.
+**Resource Optimism is partially impaired.** It detects only the inline
+`new File(...)` form, not the assigned-variable case. This is an engine defect,
+documented in `documentation/regression-baseline.md` rather than fixed.
 
 **Detection is project-wide.** UC2 and UC5 analyze an entire project. There is no
 use case for analyzing a single file on demand; UC1 will cover the per-file case
